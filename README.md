@@ -11,7 +11,7 @@ Code contributions are welcome! Commit any pull requests to the main branch. Lea
 ```bash
 git clone https://github.com/Undead34/Pass-Manager.git
 ```
-- add the changes you want 
+- add the changes you want 😀
 - and apply the git push
 ```bash
 git push
