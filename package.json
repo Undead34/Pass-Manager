@@ -1,0 +1,25 @@
+{
+  "name": "pass-manager",
+  "version": "0.0.1",
+  "description": "Open source Password Manager XD",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron .",
+    "start-dev": "electron . --development"
+  },
+  "keywords": [
+    "Password",
+    "Manager"
+  ],
+  "author": "Undead34",
+  "license": "GPL-3.0-or-later",
+  "dependencies": {
+    "@electron/remote": "^2.0.8",
+    "argon2": "^0.28.5",
+    "bson": "^4.6.2"
+  },
+  "devDependencies": {
+    "electron": "^18.1.0",
+    "electron-reload": "^2.0.0-alpha.1"
+  }
+}

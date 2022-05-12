@@ -1,0 +1,21 @@
+:root {
+  --primary: #222220;
+  --secundary: #3b3b39;
+  --tercerary: #444442;
+  --quartete: #353532;
+  --quitare: #30302d;
+  --sex: #262623;
+
+  --bg-primary: #0c0c0a;
+  
+  --text-primary: #ffffff;
+}
+
+.boxShadow {
+  box-shadow: #000000 0px 0px 4px 1px;
+  box-shadow: #262623 0px 0px 4px 1px;
+}
+
+.unselect {
+  user-select: none;
+}
