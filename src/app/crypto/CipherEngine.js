@@ -13,7 +13,7 @@ class CipherEngine {
 
     /**
      * Cipher data with secret key
-     * @param {Object} options algorithm, key, iv and aditional options 
+     * @param {Object} options algorithm, key, iv and aditional options
      * @param {string} data data to cipher in utf8
      * @returns {string} cipher text in hex
      */

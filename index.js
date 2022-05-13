@@ -1,5 +1,6 @@
 // @ts-check
 
+// @ts-ignore
 const { app, BrowserWindow, ipcMain } = require("electron");
 const fileSystem = require("./src/app/utils/fileSystem");
 const onStartup = require("./src/app/utils/onStartup");

@@ -198,7 +198,7 @@ class AES {
     }
 
     encrypt() {
-
+        
     }
 
     decrypt() {

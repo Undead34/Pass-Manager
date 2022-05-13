@@ -156,6 +156,27 @@ const BJSONDeserialize = (buffer) => {
   return deserialize(buffer);
 }
 
+/**
+ * load json file return object 
+ * @param {string} path path to json file
+ * @returns {Object} object loaded
+*/
+
+const loadJsonFile = (path) => {
+  return new Promise((resolve, rejects) => {
+    try {
+      let data = fs.readFileSync(path);
+      let object = JSON.parse(data);
+      resolve(object);
+    } catch (error) {
+      console.log(error.message);
+      rejects();
+    }
+  });
+}
+
+
+
 module.exports = fileSystem = {
   createFolder,
   exists,
@@ -166,5 +187,6 @@ module.exports = fileSystem = {
   infoFile,
   deleteFolder,
   BJSONSerialize,
-  BJSONDeserialize
+  BJSONDeserialize,
+  loadJsonFile
 };

@@ -1,4 +1,4 @@
-import algorithms from '../algorithms.json' assert { type: "json" };
+import algorithms from './algorithms.json' assert { type: "json" };
 
 
 const validateAlgorithm = (algorithm, mode, size) => {
@@ -32,4 +32,5 @@ const createAlgorithmObject = (options) => {
   }
 }
 
-export { createAlgorithmObject };
+let a = createAlgorithmObject()
+console.log(a)

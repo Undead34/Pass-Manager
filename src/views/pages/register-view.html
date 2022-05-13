@@ -1,7 +1,24 @@
-<form id="registerForm">
-  <h1>Register</h1>
-  <select name="algorithmList" id="algorithmList"></select>
-  <select name="keylenList" id="keylenList"></select>
-  <select name="modesList" id="modesList"></select>
-  <button>SEND</button>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
+    <title>Pass Manager</title>
+</head>
+
+<body>
+    <form id="registerForm">
+      <h1>Register</h1>
+      <select name="algorithmList" id="algorithms"></select>
+      <select name="keylenList" id="keylength"></select>
+      <select name="modesList" id="operationmode"></select>
+      <button>SEND</button>
+    </form>
+    <script src="register-script.js"></script>
+    <script src="../utils/create-algorithm-object.js"></script>
+</body>
+
+</html>
