@@ -1,6 +1,3 @@
-import algorithms from './algorithms.json' assert { type: "json" };
-
-
 const validateAlgorithm = (algorithm, mode, size) => {
   if (algorithms.hasOwnProperty(algorithm)) {
     if (algorithms[algorithm].hasOwnProperty(mode)) {
@@ -32,5 +29,4 @@ const createAlgorithmObject = (options) => {
   }
 }
 
-let a = createAlgorithmObject()
-console.log(a)
+export { createAlgorithmObject };
