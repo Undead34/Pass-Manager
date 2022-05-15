@@ -1,18 +1,15 @@
-const fileSystem = require('./fileSystem');
-const zlib = require("zlib");
-const path = require("path");
-const constants = require("./constants");
+const sqlite = require("sqlite3")
 
-const createDataBase = async (accountPath, dataBaseData) => {
-  try {
-    let dataBaseString = JSON.stringify(dataBaseData, null, 2);
-    let dataBaseCompressed = zlib.deflateSync(dataBaseString);
-    await fileSystem.createFolder(accountPath);
-    let dataBaseFile = path.join(accountPath, constants.databaseFile);
-    await fileSystem.writeFile(dataBaseFile, dataBaseCompressed);
-  } catch (error) {
-    console.log(error);
-  }
+const createDataBase = async (accountPath, data) => {
+  let db = new sqlite.Database(accountPath);
+  db.serialize(() => {
+      db.run('CREATE TABLE IF NOT EXISTS header (id TEXT, username TEXT, password TEXT, algorithm TEXT, keyLength INTEGER, operationMode TEXT)');
+  });
+  db.serialize(() => {
+    console.log(data)
+    db.run("INSERT INTO header VALUES (?, ?, ?, ?, ?, ?)", data.id, data.username, data.password, data.algorithm, data.keyLength, data.operationMode);
+  })
+  db.close();
 }
 
 const compressDataBase = () => { }

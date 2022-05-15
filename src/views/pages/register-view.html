@@ -12,12 +12,15 @@
 <body>
     <form id="registerForm">
       <h1>Register</h1>
+      <input type="text" id="username" name="username" placeholder="Please enter your username">
+      <input type="password" id="password" name="password" placeholder="Please enter your password">
+
       <select name="algorithmList" id="algorithms"></select>
       <select name="keylenList" id="keylength"></select>
       <select name="modesList" id="operationmode"></select>
-      <button>SEND</button>
+      <button id="btn-send" type="submit">SEND</button>
     </form>
-    <script src="register-script.js"></script>
+    <script src="register-script.js" type="module"></script>
 </body>
 
 </html>

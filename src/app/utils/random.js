@@ -88,7 +88,7 @@ const autoRandomBytes = (len) => {
 }
 
 
-module.exports = Random = {
+module.exports = random = {
   anuQuantumRandomBytes,
   autoRandomBytes,
 }

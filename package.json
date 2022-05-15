@@ -16,7 +16,8 @@
   "dependencies": {
     "@electron/remote": "^2.0.8",
     "argon2": "^0.28.5",
-    "bson": "^4.6.2"
+    "bson": "^4.6.2",
+    "sqlite3": "^5.0.8"
   },
   "devDependencies": {
     "electron": "^18.1.0",

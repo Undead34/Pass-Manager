@@ -1,4 +1,5 @@
 const fs = require("fs");
+const crypto = require("crypto")
 const { serialize, deserialize } = require("bson");
 
 /**
@@ -175,7 +176,9 @@ const loadJsonFile = (path) => {
   });
 }
 
-
+const randomUUID=()=>{
+  return crypto.randomUUID();
+}
 
 module.exports = fileSystem = {
   createFolder,
@@ -188,5 +191,6 @@ module.exports = fileSystem = {
   deleteFolder,
   BJSONSerialize,
   BJSONDeserialize,
-  loadJsonFile
+  loadJsonFile,
+  randomUUID
 };
