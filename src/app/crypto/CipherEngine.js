@@ -1,179 +1,165 @@
 const crypto = require("crypto");
 const argon2 = require("argon2");
-const AlgorithmsSymmetric = require("./Symmetric");
-const Random = require("./Random")
+const algorithmsSymmetric = require("./algorithmsSymmetric.json");
+const random = require("../utils/random")
 
-class CipherEngine {
-
-    constructor(passphrase = "asd", algorithm = "aes", kdf = "argon2") {
-        this.passphrase = typeof passphrase === "string" ? passphrase : undefined;
-        this.algorithm = typeof algorithm === "object" ? algorithm : undefined;
-        this.kdf = typeof kdf === "string" ? kdf : undefined;
-    }
-
-    /**
-     * Cipher data with secret key
-     * @param {Object} options algorithm, key, iv and aditional options
-     * @param {string} data data to cipher in utf8
-     * @returns {string} cipher text in hex
-     */
-    async cipherSymmetric(options, data) {
-        try {
-            const cipher = crypto.createCipheriv(options.algorithm, options.key, options.iv, options.options);
-            let encrypted = cipher.update(data, 'utf8', 'hex');
-            encrypted += cipher.final('hex');
-            return encrypted;
-        } catch (error) {
-            console.log(error.message);
-            return;
-        }
-    }
-
-    /**
-     * decipher data with secret key
-     * @param {Object} options algorithm, key, iv and aditional options 
-     * @param {string} data data to cipher in utf8
-     * @returns {string} 
-     */
-    async decipherSymmetric(options, data) {
-        try {
-            const decipher = crypto.createDecipheriv(options.algorithm, options.key, options.iv, options.options);
-            let decrypted = decipher.update(data, 'hex', 'utf8');
-            decrypted += decipher.final('utf8');
-            return decrypted;
-        } catch (error) {
-            console.log(error.message);
-            return;
-        }
-    }
-
-    async generateIV() {
-        let buf = await Random.autoRandomBytes(16)
-        var ab = new ArrayBuffer(buf.bytes.length);
-        var view = new Uint8Array(ab);
-        for (var i = 0; i < buf.bytes.length; ++i) {
-            view[i] = buf.bytes[i];
-        }
-        return ab;
-    }
-
-    getAlgorithmsSymmetric(algorithm, mode, keySize) {
-        const algorithmsSymmetric = new AlgorithmsSymmetric();
-        let _algorithm = algorithmsSymmetric.algorithms[algorithm];
-        if (_algorithm.keySizes.includes(parseInt(keySize))) {
-            let _mode = _algorithm.operationMode[mode];
-            return { algorithm: `${_algorithm.name}-${keySize}-${_mode.name}`, keySize: _mode[`_${keySize}`] };	
-        } else {
-            return "Options incorrect";
-        }
-    }
-
-    /**
- * The key engine is in charge of creating, changing, verifying, modify the user's keys.
- * 
- * 
- * @param {string} passphrase password or master key of user
- * @param {string} algorithm AES, 3DES, ChaCha20, ChaCha20-Poly1305, ...
- * @returns {KeyEngine} KeyEngine
-*/
-
-
-    /**
-     * Scrypt key derivation function algorithms simetric
-     * @returns {Buffer} Buffer
-     */
-    async _scryptSymmetric() {
-        try {
-            const salt = await Random.autoRandomBytes(16);
-            if (salt.source === "anu-quantum-random") console.log("source: secure anu-quantum-random");
-            let key = crypto.scryptSync(this.passphrase, salt.bytes, this.algorithm.keySize / 8);
-            return { key: key, salt: salt.bytes, kdf: "scrypt" };
-        } catch (error) {
-            console.log(error.message);
-            return undefined;
-        }
-    }
-
-    /**
-     * PBKDF2 key derivation function algorithms simetric
-     * @returns {Buffer} Buffer
-     */
-    async _pbkdf2Symmetric() {
-        try {
-            const salt = await Random.autoRandomBytes(16);
-            if (salt.source === "anu-quantum-random") console.log("source: secure anu-quantum-random");
-            let key = crypto.pbkdf2Sync(this.passphrase, salt.bytes, 100000, this.algorithm.keySize / 8, "sha512");
-            return { key: key, salt: salt.bytes, kdf: "pbkdf2" };
-        } catch (error) {
-            console.log(error.message);
-            return undefined;
-        }
-    }
-
-    /**
-     * Argon2 key derivation function algorithms simetric
-     * @returns {Buffer} Buffer
-    */
-    async _argon2Symmetric() {
-        try {
-            const salt = await Random.autoRandomBytes(16);
-            if (salt.source === "anu-quantum-random") console.log("source: secure anu-quantum-random")
-            let key_argon = await argon2.hash(this.passphrase, { salt: salt.bytes, timeCost: 2, memoryCost: 1024, parallelism: 1, hashLength: this.algorithm.keySize / 8 });
-            let key_b64 = key_argon.split("$").at(-1);
-            return { key: Buffer.from(key_b64, "base64"), salt: salt.bytes, kdf: "argon2" };
-        } catch (error) {
-            console.log(error.message);
-            return undefined;
-        }
-    }
-
-    async autoDeriveKeySymmetric() {
-        if (this.kdf === "scrypt") {
-            return await this._scryptSymmetric();
-        } else if (this.kdf === "pbkdf2") {
-            return await this._pbkdf2Symmetric();
-        } else if (this.kdf === "argon2") {
-            return await this._argon2Symmetric();
-        } else {
-            throw new Error("KDF not supported");
-        }
-    }
-
-    /**
-     * argon2 password hashing
-     * @param {string} passphrase password or master key of user
-     * @returns {string} hash 
-     */
-    async safeStorePassphrase(passphrase) {
-        this.passphrase = passphrase;
-        let key_argon = await argon2.hash(this.passphrase, { timeCost: 2, memoryCost: 1024, parallelism: 1, hashLength: this.algorithm.keySize / 8 });
-        return key_argon;
-    }
-
-    randomUUID = () => {
-        return crypto.randomUUID();
-    }
-
-    /**
- * encode data to hex
- * @param {sting} data 
- * @returns string
+/**
+ * Cipher data with secret key
+ * @param {Object} options algorithm, key, iv and aditional options
+ * @param {string} data data to cipher in utf8
+ * @returns {string} cipher text in hex
  */
-    encodeTohex(data) {
-        return Buffer.from(data).toString('hex');
+const cipherSymmetric = async (options, data) => {
+    try {
+        const cipher = crypto.createCipheriv(options.algorithm, options.key, options.iv, options.options);
+        let encrypted = cipher.update(data, 'utf8', 'hex');
+        encrypted += cipher.final('hex');
+        return encrypted;
+    } catch (error) {
+        console.log(error.message);
+        return;
     }
-
-    /**
-     * decode data to hex
-     * @param {sting} data hex
-     * @returns string
-     */
-    decodeTohex(data) {
-        return Buffer.from(data, 'hex').toString();
-    }
-
 }
 
+/**
+ * decipher data with secret key
+ * @param {Object} options algorithm, key, iv and aditional options 
+ * @param {string} data data to cipher in utf8
+ * @returns {string} 
+ */
+const decipherSymmetric = async (options, data) => {
+    try {
+        const decipher = crypto.createDecipheriv(options.algorithm, options.key, options.iv, options.options);
+        let decrypted = decipher.update(data, 'hex', 'utf8');
+        decrypted += decipher.final('utf8');
+        return decrypted;
+    } catch (error) {
+        console.log(error.message);
+        return;
+    }
+}
+
+const generateIV = () => {
+    let buf = await random.autoRandomBytes(16)
+    var ab = new ArrayBuffer(buf.bytes.length);
+    var view = new Uint8Array(ab);
+    for (var i = 0; i < buf.bytes.length; ++i) {
+        view[i] = buf.bytes[i];
+    }
+    return ab;
+}
+
+const getAlgorithmsSymmetric = (algorithm, mode, keySize) => {
+    return algorithmsSymmetric[algorithm][keySize][mode];
+}
+
+/**
+ * Scrypt key derivation function algorithms simetric
+ * @returns {Buffer} Buffer
+ */
+const _scryptSymmetric = () => {
+    try {
+        const salt = await random.autoRandomBytes(16);
+        if (salt.source === "anu-quantum-random") console.log("source: secure anu-quantum-random");
+        let key = crypto.scryptSync(passphrase, salt.bytes, algorithm.keySize / 8);
+        return { key: key, salt: salt.bytes, kdf: "scrypt" };
+    } catch (error) {
+        console.log(error.message);
+        return undefined;
+    }
+}
+
+/**
+ * PBKDF2 key derivation function algorithms simetric
+ * @returns {Buffer} Buffer
+ */
+const _pbkdf2Symmetric = async () => {
+    try {
+        const salt = await random.autoRandomBytes(16);
+        if (salt.source === "anu-quantum-random") console.log("source: secure anu-quantum-random");
+        let key = crypto.pbkdf2Sync(passphrase, salt.bytes, 100000, algorithm.keySize / 8, "sha512");
+        return { key: key, salt: salt.bytes, kdf: "pbkdf2" };
+    } catch (error) {
+        console.log(error.message);
+        return undefined;
+    }
+}
+
+/**
+ * Argon2 key derivation function algorithms simetric
+ * @returns {Buffer} Buffer
+*/
+const _argon2Symmetric = async () => {
+    try {
+        const salt = await random.autoRandomBytes(16);
+        if (salt.source === "anu-quantum-random") console.log("source: secure anu-quantum-random")
+        let key_argon = await argon2.hash(passphrase, { salt: salt.bytes, timeCost: 2, memoryCost: 1024, parallelism: 1, hashLength: algorithm.keySize / 8 });
+        let key_b64 = key_argon.split("$").at(-1);
+        return { key: Buffer.from(key_b64, "base64"), salt: salt.bytes, kdf: "argon2" };
+    } catch (error) {
+        console.log(error.message);
+        return undefined;
+    }
+}
+
+const autoDeriveKeySymmetric = async () => {
+    if (kdf === "scrypt") {
+        return await _scryptSymmetric();
+    } else if (kdf === "pbkdf2") {
+        return await _pbkdf2Symmetric();
+    } else if (kdf === "argon2") {
+        return await _argon2Symmetric();
+    } else {
+        throw new Error("KDF not supported");
+    }
+}
+
+/**
+ * argon2 password hashing
+ * @param {string} passphrase password or master key of user
+ * @returns {string} hash 
+ */
+const safeStorePassphrase = async (passphrase) => {
+    passphrase = passphrase;
+    let key_argon = await argon2.hash(passphrase, { timeCost: 2, memoryCost: 1024, parallelism: 1, hashLength: algorithm.keySize / 8 });
+    return key_argon;
+}
+
+const randomUUID = () => {
+    return crypto.randomUUID();
+}
+
+/**
+* encode data to hex
+* @param {sting} data 
+* @returns string
+*/
+const encodeTohex = (data) => {
+    return Buffer.from(data).toString('hex');
+}
+
+/**
+ * decode data to hex
+ * @param {sting} data hex
+ * @returns string
+ */
+const decodeTohex = (data) => {
+    return Buffer.from(data, 'hex').toString();
+}
+
+module.exports = CipherEngine = {
+    cipherSymmetric,
+    decipherSymmetric,
+    generateIV,
+    getAlgorithmsSymmetric,
+    autoDeriveKeySymmetric,
+    safeStorePassphrase,
+    randomUUID,
+    encodeTohex,
+    decodeTohex
+};
+
+/*
 let a = [
     "aes-128-cbc",
     "aes-128-cbc-hmac-sha1",
@@ -379,10 +365,4 @@ let a = [
     "sm4-ecb",
     "sm4-ofb"
 ]
-
-module.exports = CipherEngine;
-
-
-/*
-const getInfo = (mode) => {for (let x = 0; x < 4; x++) {let z = crypto.getCipherInfo(`aes-${ x === 0 ? 128 : x === 1 ? 192 : x === 2 ? 256 : x === 4 ? 512 : 0 }-${mode}`);if (z === undefined | z === "undefined") {console.log(`aes-${ x === 0 ? 128 : x === 1 ? 192 : x === 2 ? 256 : x === 3 ? 512 : 0 }-${mode} no exist`)}else {console.log(z);}}}
 */

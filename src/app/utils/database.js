@@ -20,15 +20,11 @@ const createDataBase = async (databasePath, data) => {
       MASTER_KEY_HASH TEXT,
       MASTER_KEY_SALT TEXT,
       MASTER_KEY_KEY_DERIVATION_FUNCTION TEXT,
-      HAS_A_PING TEXT,
-      PING_HASH TEXT,
-      PING_SALT TEXT,
-      PING_KEY_DERIVATION_FUNCTION TEXT
     )`;
     database.run(inquiry);
 
-    let statement = database.prepare("INSERT INTO LOGIN_DATA VALUES (?,?,?,?,?,?,?)");
-    statement.run("1", "2", "3", "4", "5", "6", "7");
+    let statement = database.prepare("INSERT INTO LOGIN_DATA VALUES (?,?,?)");
+    statement.run("1", "2", "3");
     statement.finalize();
   });
 

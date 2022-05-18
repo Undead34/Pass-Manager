@@ -176,10 +176,6 @@ const loadJsonFile = (path) => {
   });
 }
 
-const randomUUID=()=>{
-  return crypto.randomUUID();
-}
-
 module.exports = fileSystem = {
   createFolder,
   exists,
@@ -192,5 +188,4 @@ module.exports = fileSystem = {
   BJSONSerialize,
   BJSONDeserialize,
   loadJsonFile,
-  randomUUID
 };

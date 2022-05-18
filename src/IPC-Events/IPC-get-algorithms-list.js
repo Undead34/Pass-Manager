@@ -7,7 +7,7 @@ module.exports = {
 	handle: true,
 	async execute (event) {
     try {
-      let algorithms = await fileSystem.loadJsonFile(path.join(__dirname, "../app/crypto/algorithms.json"));
+      let algorithms = await fileSystem.loadJsonFile(path.join(__dirname, "../app/crypto/algorithmsSymmetric.json"));
       return algorithms;
     } catch (error) {
       console.log(error);

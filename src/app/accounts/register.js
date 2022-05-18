@@ -1,19 +1,27 @@
 const path = require('path');
 const constants = require('../utils/constants');
-const fileSystem = require('../utils/fileSystem');
+const CipherEngine = require('../crypto/CipherEngine');
 const database = require('../utils/database');
 
 const registerUser = async (data) => {
-  let accountsID = fileSystem.randomUUID();
-  let accountsPath = path.join(constants.paths.root, "accounts");
-  let accountsFile = path.join(accountsPath, accountsID + ".kpm");
-  data.id = accountsID;
+  // const cipherEngine = new CipherEngine(data.password, "", "argon2");
+  // let accountID = cipherEngine.randomUUID();
+  // let accountPath = path.join(constants.paths.root, "accounts");
+  // let databasePath = path.join(accountPath, accountID + ".kpm");
 
 
 
-  database.createDataBase(accountsFile, data);
+
+
+  // database.createDataBase(accountsFile, data);
 }
 
 module.exports = register = {
   registerUser
 };
+
+// [IPC] is registering the user
+// [IPC] with the password
+// [IPC] with the algorithm aes
+// [IPC] with the key length 128
+// [IPC] with the operation mode cbc
