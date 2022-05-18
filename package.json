@@ -1,7 +1,7 @@
 {
   "name": "pass-manager",
   "version": "0.0.1",
-  "description": "Open source Password Manager XD",
+  "description": "Open source Password Manager",
   "main": "index.js",
   "scripts": {
     "start": "electron .",

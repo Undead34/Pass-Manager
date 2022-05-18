@@ -7,7 +7,7 @@ const constants = require('./constants');
 
 class Configuration {
   constructor() {
-    this.path = path.join(constants.path[constants.platform], constants.configFile);
+    this.path = path.join(constants.paths.root, "settings.json");
     this.lastModified = this._lastModified();
   }
 

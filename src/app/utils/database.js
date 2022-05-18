@@ -1,15 +1,38 @@
-const sqlite = require("sqlite3")
+const constants = require("./constants")
+const sqlite3 = require("sqlite3")
 
-const createDataBase = async (accountPath, data) => {
-  let db = new sqlite.Database(accountPath);
-  db.serialize(() => {
-      db.run('CREATE TABLE IF NOT EXISTS header (id TEXT, username TEXT, password TEXT, algorithm TEXT, keyLength INTEGER, operationMode TEXT)');
+const getHeader = () => {
+  return { database_vesion: constants.databaseConstants.databaseVersion, version: constants.appConstants.appVersion }
+}
+
+const createDataBase = async (databasePath, data) => {
+  const database = new sqlite3.Database(databasePath);
+  database.serialize(() => {
+    database.run("CREATE TABLE IF NOT EXISTS HEADER (ID TEXT, VERSION TEXT, DATABASE_VERSION TEXT)");
+    const statement = database.prepare("INSERT INTO HEADER VALUES (?,?,?)");
+    let header = getHeader();
+    statement.run(data.id, header.version, header.database_vesion);
+    statement.finalize();
   });
-  db.serialize(() => {
-    console.log(data)
-    db.run("INSERT INTO header VALUES (?, ?, ?, ?, ?, ?)", data.id, data.username, data.password, data.algorithm, data.keyLength, data.operationMode);
-  })
-  db.close();
+
+  database.serialize(() => {
+    let inquiry = `CREATE TABLE IF NOT EXISTS LOGIN_DATA (
+      MASTER_KEY_HASH TEXT,
+      MASTER_KEY_SALT TEXT,
+      MASTER_KEY_KEY_DERIVATION_FUNCTION TEXT,
+      HAS_A_PING TEXT,
+      PING_HASH TEXT,
+      PING_SALT TEXT,
+      PING_KEY_DERIVATION_FUNCTION TEXT
+    )`;
+    database.run(inquiry);
+
+    let statement = database.prepare("INSERT INTO LOGIN_DATA VALUES (?,?,?,?,?,?,?)");
+    statement.run("1", "2", "3", "4", "5", "6", "7");
+    statement.finalize();
+  });
+
+  database.close();
 }
 
 const compressDataBase = () => { }

@@ -7,7 +7,7 @@ const { initConfiguration, getConfiguration } = require('./appConfig');
  * Validate if this is the first run of the app
  */
 const isFirstRun = async () => {
-  let frishrun = path.join(constants.path[constants.platform], ".frishrun");
+  let frishrun = path.join(constants.paths.root, ".frishrun");
   if (!await fileSystem.exists(frishrun)) {
     return true;
   } else {
@@ -19,10 +19,10 @@ const init = async () => {
   if (await isFirstRun()) {
     try {
       console.log('First run');
-      let homePath = constants.path[constants.platform];
+      let homePath = constants.paths.root;
       await fileSystem.createFolder(homePath);
-      await fileSystem.createFolder(path.join(homePath, constants.accountsFolder));
-      await fileSystem.writeFile(path.join(homePath, constants.configFile), fileSystem.BJSONSerialize(constants.defaultConfig));
+      await fileSystem.createFolder(path.join(homePath, "accounts"));
+      await fileSystem.writeFile(path.join(homePath, "settings.json"), fileSystem.BJSONSerialize(constants.userConstants));
       await fileSystem.writeFile(path.join(homePath, ".frishrun"), "true");
       initConfiguration();
       return true;

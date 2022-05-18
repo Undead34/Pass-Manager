@@ -1,40 +1,50 @@
+const path = require("path")
+
+const appConstants = {
+  appName: 'Pass Manager',
+  appNameMachine: 'pass-manager',
+  appVersion: '1.0.0',
+  appDescription: 'Open source Password Manager',
+  appAuthor: 'Undead34',
+}
+
+const databaseConstants = {
+  databaseName: 'pass-manager',
+  databaseVersion: '1.0.0',
+  databaseExtension: 'db',
+  databaseCompressionExtension: 'db.gz',
+  databaseCompressionAlgorithm: 'gzip',
+}
+
+const cipherConstants = {
+  cipherName: 'AES-256-CBC',
+  cipherKeyLength: 32,
+  cipherSaltLength: 16,
+  cipherIterations: 10000,
+  cipherHashAlgorithm: 'sha512',
+}
+
+const userConstants = {
+  theme: 'light',
+  language: 'en',
+}
+
+const paths = {
+  root: path.join(process.platform === 'win32' ? 'C:/' : '/', process.platform === 'win32' ? '/ProgramData/Pass-Manager' : process.platform === 'darwin' ? '/Applications/Pass-Manager.app' : 'opt/Pass-Manager'),
+  database: path.join(path.join(process.platform === 'win32' ? 'C:/' : '/', process.platform === 'win32' ? '/ProgramData/Pass-Manager' : process.platform === 'darwin' ? '/Applications/Pass-Manager.app' : 'opt/Pass-Manager'), "accounts"),
+}
+
 const constants = {
-  platform: process.platform,
-  configFile: "settings.json",
-  configUserFile: "config.json",
-  backupFolder: "backups",
-  accountsFolder: "accounts",
-  databaseFile: "database.pmdb",
-  usersDataBaseFile: "users.db",
-  defaultConfig: {},
-  databaseVesion: "1.0.0",
-  configUser: {
-    cryptography: {
-      compressDataBeforeEncryption: true,
-      encryptionType: "simetric",
-      encryptionAlgorithm: "aes-256-cbc",
-      keyDerivationAlgorithm: "pbkdf2",
-      hmacAlgorithm: "sha256",
-      useHmac: true,
-      keySize: 32,
-    },
-    storage: {
-      SaveConfigHashToDatabase: true,
-      compressDataBase: true,
-      saveMetadata: true,
-    },
-    userInterface: {
-      developmentMode: false,
-      theme: "light",
-    },
-  },
-  path: {
-    win32: "C:/ProgramData/Pass-Manager",
-    linux: "/home/user/.config/Pass-Manager",
-  }
+  appConstants,
+  databaseConstants,
+  cipherConstants,
+  userConstants,
+  paths,
 };
 
 module.exports = constants;
+
+
 
 /*
 
@@ -42,9 +52,10 @@ HEADER:
   ID: ACCOUNT_ID
   VERSION: 1.0.0
   DATABASE_VERSION: 1.0.0
+
+
   MASTER_KEY_HASH: HASH_OF_MASTER_KEY
   MASTER_KEY_SALT: SALT_OF_MASTER_KEY
-  MASTER_KEY_IV: IV_OF_MASTER_KEY
   MASTER_KEY_KEY_DERIVATION_FUNCTION: PBKDF2, SCRYPT, ARGON2, etc
   MASTER_KEY_KEY_DERIVATION_CONFIG: CONFIG_OF_KEY_DERIVATION_FUNCTION
 
@@ -115,7 +126,18 @@ HEADER:
   HAS_A_ACCOUNTS_FOLDER: true/false
   ACCOUNTS_FOLDER_HASH: HASH_OF_ACCOUNTS_FOLDER
   ACCOUNTS_FOLDER_SALT: SALT_OF_ACCOUNTS_FOLDER
-  
+
+
+
+  platform: process.platform,
+  configFile: "settings.json",
+  configUserFile: "config.json",
+  backupFolder: "backups",
+  accountsFolder: "accounts",
+  path: {
+    win32: "C:/ProgramData/Pass-Manager",
+    linux: "/home/user/.config/Pass-Manager",
+  }
 
 
 */
