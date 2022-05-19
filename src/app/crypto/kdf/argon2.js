@@ -1,6 +1,5 @@
 const random = require("../tools/random")
 const { argon2d, argon2i } = require("argon2-ffi");
-const utils = require("util")
 
 const argon2dKDF = async () => {
 

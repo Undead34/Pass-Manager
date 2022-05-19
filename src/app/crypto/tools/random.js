@@ -25,6 +25,9 @@ const APIGet = async (uri) => {
   })
 }
 
+/**
+ * To give greater security and entropy to the 100% random data, we disorder them with pseudo-random number.
+*/
 const _difusionBytes = (bytes) => {
   if (Buffer.isBuffer(bytes)) {
     let arrayA = [];
