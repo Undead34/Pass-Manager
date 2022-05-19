@@ -18,14 +18,14 @@ const createDataBase = async (data) => {
 
   database.serialize(() => {
     let inquiry = `CREATE TABLE IF NOT EXISTS LOGIN_DATA (
-      MASTER_KEY_HASH TEXT,
-      MASTER_KEY_SALT TEXT,
+      MASTER_KEY_HASH BLOB,
+      MASTER_KEY_SALT BLOB,
       MASTER_KEY_KEY_DERIVATION_FUNCTION TEXT
     )`;
     database.run(inquiry);
 
     let statement = database.prepare("INSERT INTO LOGIN_DATA VALUES (?,?,?)");
-    statement.run("1", "2", "3");
+    statement.run(data.masterhash.hash, data.masterhash.salt, data.kdf);
     statement.finalize();
   });
 

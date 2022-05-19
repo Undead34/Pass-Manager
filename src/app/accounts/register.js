@@ -29,17 +29,16 @@ const userExists = async (username) => {
 const registerUser = async (data) => {
   data.id = cipherEngine.randomUUID();
 
-  let hashPassword;
   if (data.kdf === "argon2") {
-    hashPassword = await cipherEngine.argon.argon2dKDF(data.password);
+    data.masterhash = await cipherEngine.argon.argon2dKDF(data.password);
   } else if (data.kdf === "pbkdf2") {
-    hashPassword = await cipherEngine.pbkdf2.PBKDF2(data.password);
+    data.masterhash = await cipherEngine.pbkdf2.PBKDF2(data.password);
   }
   else if (data.kdf === "scrypt") {
-    hashPassword = await cipherEngine.scrypt.scrypt(data.password);
+    data.masterhash = await cipherEngine.scrypt.scrypt(data.password);
   }
 
-  database.createDataBase(data)
+  database.createDataBase(data);
 
   let users = await _getUsers();
   users[data.id] = { username: Buffer.from(data.username) }
