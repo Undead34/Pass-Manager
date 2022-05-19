@@ -18,7 +18,15 @@ const createDataBase = async (data) => {
 
   database.serialize(() => {
     database.run(createTable("HEADER", { "ID": "TEXT", "VERSION": "TEXT", "DATABASE_VERSION": "TEXT" }));
-    database.run(createTable("LOGIN_DATA", { "MASTER_KEY_HASH": "BLOB", "MASTER_KEY_SALT": "BLOB", "MASTER_KEY_KEY_DERIVATION_FUNCTION": "TEXT" }));
+    database.run(createTable("ACCOUNT_DATA", { "ALGORITHM": "TEXT", "KEY_LENGTH": "TEXT", "OPERATION_MODE": "TEXT", "KDF": "TEXT" }));
+    database.run(createTable("LOGIN_DATA", {
+      "MASTER_KEY_HASH": "BLOB",
+      "MASTER_KEY_SALT": "BLOB",
+      "MASTER_KEY_KEY_DERIVATION_FUNCTION": "TEXT",
+      "MASTER_KEY_KEY_DERIVATION_PARAMETERS": "TEXT",
+      "USERNAME": "TEXT",
+    }));
+
     database.run(createTable("CREDENTIALS", {
       "ID": "TEXT",
       "USERNAME_ELEMENT": "TEXT",
@@ -39,11 +47,18 @@ const createDataBase = async (data) => {
     statement.run(data.id, constants.appConstants.appVersion, constants.databaseConstants.databaseVersion);
     statement.finalize();
 
-    statement = database.prepare("INSERT INTO LOGIN_DATA VALUES (?,?,?)");
-    statement.run(data.masterhash.hash, data.masterhash.salt, data.kdf);
+    statement = database.prepare("INSERT INTO LOGIN_DATA VALUES (?,?,?,?,?)");
+    statement.run(data.masterhash.hash, data.masterhash.salt, data.kdf, "DEFAULT", data.username);
+    statement.finalize();
+
+    statement = database.prepare("INSERT INTO ACCOUNT_DATA VALUES (?,?,?,?)");
+    statement.run(data.algorithm, data.keyLength, data.operationMode, data.kdf);
     statement.finalize();
   });
+
   database.close();
+
+  return true;
 }
 
 const compressDataBase = () => { }
@@ -74,77 +89,7 @@ var Folder = {
   "name": "child",
   "created": "2020-05-06T18:54:49+00:00",
   "modified": "2020-05-06T18:54:49+00:00",
-  "created_by": "d57c10f5-639d-5160-9c81-8a0c6c4ec856",
-  "modified_by": "d57c10f5-639d-5160-9c81-8a0c6c4ec856",
-  "permissions": [
-    {
-      "id": "1262b7d3-be18-4b5f-bc83-4c995235bb84",
-      "aco": "Folder",
-      "aco_foreign_key": "d9aaa38e-f80b-4823-b245-83e22a38f765",
-      "aro": "User",
-      "aro_foreign_key": "f848277c-5398-58f8-a82a-72397af2d450",
-      "type": 1,
-      "created": "2020-05-06T18:54:50+00:00",
-      "modified": "2020-05-06T18:54:50+00:00",
-      "group": null,
-      "user": {
-        "id": "f848277c-5398-58f8-a82a-72397af2d450",
-        "role_id": "a58de6d3-f52c-5080-b79b-a601a647ac85",
-        "username": "ada@passbolt.com",
-        "active": true,
-        "deleted": false,
-        "created": "2020-03-02T11:14:33+00:00",
-        "modified": "2020-04-02T11:14:33+00:00",
-        "profile": {
-          "id": "99522cc9-0acc-5ae2-b996-d03bded3c0a6",
-          "user_id": "f848277c-5398-58f8-a82a-72397af2d450",
-          "first_name": "Ada",
-          "last_name": "Lovelace",
-          "created": "2020-05-02T11:14:33+00:00",
-          "modified": "2020-05-02T11:14:33+00:00",
-          "avatar": {
-            "id": "5426cb53-d909-40eb-9202-38f2c1f94084",
-            "user_id": "f848277c-5398-58f8-a82a-72397af2d450",
-            "foreign_key": "99522cc9-0acc-5ae2-b996-d03bded3c0a6",
-            "model": "Avatar",
-            "filename": "ada.png",
-            "filesize": 170049,
-            "mime_type": "image\/png",
-            "extension": "png",
-            "hash": "97e36ab6528e26e3b9f988444ef490f125f49a39",
-            "path": "Avatar\/84\/a1\/21\/5426cb53d90940eb920238f2c1f94084\/5426cb53d90940eb920238f2c1f94084.png",
-            "adapter": "Local",
-            "created": "2020-05-02T11:14:35+00:00",
-            "modified": "2020-05-02T11:14:35+00:00",
-            "url": {
-              "medium": "img\/public\/Avatar\/84\/a1\/21\/5426cb53d90940eb920238f2c1f94084\/5426cb53d90940eb920238f2c1f94084.a99472d5.png",
-              "small": "img\/public\/Avatar\/84\/a1\/21\/5426cb53d90940eb920238f2c1f94084\/5426cb53d90940eb920238f2c1f94084.65a0ba70.png"
-            }
-          }
-        },
-        "last_logged_in": ""
-      }
-    },
-    {
-      "id": "f073fd56-e5bd-4773-9ddb-da386de6ef51",
-      "aco": "Folder",
-      "aco_foreign_key": "d9aaa38e-f80b-4823-b245-83e22a38f765",
-      "aro": "Group",
-      "aro_foreign_key": "d57c10f5-639d-5160-9c81-8a0c6c4ec856",
-      "type": 15,
-      "created": "2020-05-06T18:54:49+00:00",
-      "modified": "2020-05-06T18:54:49+00:00",
-      "group": {
-        "id": "516c2db6-0aed-52d8-854f-b3f3499995e7",
-        "name": "Leadership team",
-        "deleted": false,
-        "created": "2016-01-29T13:39:25+00:00",
-        "modified": "2016-01-29T13:39:25+00:00",
-        "created_by": "d57c10f5-639d-5160-9c81-8a0c6c4ec856",
-        "modified_by": "d57c10f5-639d-5160-9c81-8a0c6c4ec856"
-      }
-    }
-  ],
+  "values": [],
   "permission": {
     "id": "f073fd56-e5bd-4773-9ddb-da386de6ef51",
     "aco": "Folder",
