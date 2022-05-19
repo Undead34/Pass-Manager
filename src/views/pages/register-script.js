@@ -12,12 +12,12 @@ const drawEncryptionOptions = async () => {
   addOptionsTagInSelectElement(keyLengthElement, algorithmsList[algorithmsElement.value]);
   addOptionsTagInSelectElement(operationModeElement, algorithmsList[algorithmsElement.value][keyLengthElement.value]);
 
-  addEventListeners(algorithmsElement, ["change", "click"], ()=>{
+  addEventListeners(algorithmsElement, ["change", "click"], () => {
     addOptionsTagInSelectElement(keyLengthElement, algorithmsList[algorithmsElement.value]);
     addOptionsTagInSelectElement(operationModeElement, algorithmsList[algorithmsElement.value][keyLengthElement.value]);
   })
 
-  addEventListeners(keyLengthElement, ["change"], ()=>{
+  addEventListeners(keyLengthElement, ["change"], () => {
     addOptionsTagInSelectElement(operationModeElement, algorithmsList[algorithmsElement.value][keyLengthElement.value]);
   })
 }
@@ -36,7 +36,7 @@ registerForm.addEventListener("submit", async (event) => {
     kdf: "scrypt",
   }
 
-  window.api.invoke_2("account-register", registrationPackage);
+  await window.api.invoke_2("account-register", registrationPackage);
 
   registrationPackage = null;
 })
