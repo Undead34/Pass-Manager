@@ -27,22 +27,25 @@ const userExists = async (username) => {
 }
 
 const registerUser = async (data) => {
-  data.id = cipherEngine.randomUUID();
-
-  if (data.kdf === "argon2") {
-    data.masterhash = await cipherEngine.argon.argon2dKDF(data.password);
-  } else if (data.kdf === "pbkdf2") {
-    data.masterhash = await cipherEngine.pbkdf2.PBKDF2(data.password);
+  try {
+    data.id = cipherEngine.randomUUID();
+    if (data.kdf === "argon2") {
+      data.masterhash = await cipherEngine.argon.argon2dKDF(data.password);
+    } else if (data.kdf === "pbkdf2") {
+      data.masterhash = await cipherEngine.pbkdf2.PBKDF2(data.password);
+    }
+    else if (data.kdf === "scrypt") {
+      data.masterhash = await cipherEngine.scrypt.scrypt(data.password);
+    }
+    database.createDataBase(data);
+    let users = await _getUsers();
+    users[data.id] = { username: Buffer.from(data.username) }
+    await fileSystem.writeFile(path.join(constants.paths.root, "users.json"), JSON.stringify(users));
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
   }
-  else if (data.kdf === "scrypt") {
-    data.masterhash = await cipherEngine.scrypt.scrypt(data.password);
-  }
-
-  database.createDataBase(data);
-
-  let users = await _getUsers();
-  users[data.id] = { username: Buffer.from(data.username) }
-  await fileSystem.writeFile(path.join(constants.paths.root, "users.json"), JSON.stringify(users));
 }
 
 module.exports = register = {
