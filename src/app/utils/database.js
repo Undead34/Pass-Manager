@@ -2,33 +2,47 @@ const constants = require("./constants")
 const sqlite3 = require("sqlite3")
 const path = require("path")
 
-const getHeader = () => {
-  return { database_vesion: constants.databaseConstants.databaseVersion, version: constants.appConstants.appVersion }
+// return SQLITE3 query
+const createTable = (tableName, columns) => {
+  let query = `CREATE TABLE IF NOT EXISTS ${tableName} (`;
+  for (let column in columns) {
+    query += `${column} ${columns[column]},`;
+  }
+  query = query.slice(0, -1);
+  query += ")";
+  return query;
 }
 
 const createDataBase = async (data) => {
   const database = new sqlite3.Database(path.join(constants.paths.root, `accounts/${data.id}.kpm`));
+
   database.serialize(() => {
-    database.run("CREATE TABLE IF NOT EXISTS HEADER (ID TEXT, VERSION TEXT, DATABASE_VERSION TEXT)");
-    const statement = database.prepare("INSERT INTO HEADER VALUES (?,?,?)");
-    let header = getHeader();
-    statement.run(data.id, header.version, header.database_vesion);
+    database.run(createTable("HEADER", { "ID": "TEXT", "VERSION": "TEXT", "DATABASE_VERSION": "TEXT" }));
+    database.run(createTable("LOGIN_DATA", { "MASTER_KEY_HASH": "BLOB", "MASTER_KEY_SALT": "BLOB", "MASTER_KEY_KEY_DERIVATION_FUNCTION": "TEXT" }));
+    database.run(createTable("CREDENTIALS", {
+      "ID": "TEXT",
+      "USERNAME_ELEMENT": "TEXT",
+      "USERNAME_VALUE": "BLOB",
+      "PASSWORD_ELEMENT": "TEXT",
+      "PASSWORD_VALUE": "BLOB",
+      "DATE_CREATED": "TEXT",
+      "DATE_MODIFIED": "TEXT",
+      "DATE_LAST_USED": "TEXT",
+      "ORIGIN_URL": "BLOB",
+      "ACTION_URL": "BLOB",
+      "SUBMIT_ELEMENT": "TEXT",
+      "ICON_URL": "BLOB",
+      "TIMES_USED": "TEXT",
+    }));
+
+    let statement = database.prepare("INSERT INTO HEADER VALUES (?,?,?)");
+    statement.run(data.id, constants.appConstants.appVersion, constants.databaseConstants.databaseVersion);
     statement.finalize();
-  });
 
-  database.serialize(() => {
-    let inquiry = `CREATE TABLE IF NOT EXISTS LOGIN_DATA (
-      MASTER_KEY_HASH BLOB,
-      MASTER_KEY_SALT BLOB,
-      MASTER_KEY_KEY_DERIVATION_FUNCTION TEXT
-    )`;
-    database.run(inquiry);
-
-    let statement = database.prepare("INSERT INTO LOGIN_DATA VALUES (?,?,?)");
+    statement = database.prepare("INSERT INTO LOGIN_DATA VALUES (?,?,?)");
     statement.run(data.masterhash.hash, data.masterhash.salt, data.kdf);
     statement.finalize();
   });
-
   database.close();
 }
 
