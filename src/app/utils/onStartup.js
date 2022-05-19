@@ -22,7 +22,8 @@ const init = async () => {
       let homePath = constants.paths.root;
       await fileSystem.createFolder(homePath);
       await fileSystem.createFolder(path.join(homePath, "accounts"));
-      await fileSystem.writeFile(path.join(homePath, "settings.json"), fileSystem.BJSONSerialize(constants.userConstants));
+      await fileSystem.writeFile(path.join(homePath, "settings.json"), JSON.stringify(constants.userConstants));
+      await fileSystem.writeFile(path.join(homePath, "users.json"), JSON.stringify({}));
       await fileSystem.writeFile(path.join(homePath, ".frishrun"), "true");
       initConfiguration();
       return true;

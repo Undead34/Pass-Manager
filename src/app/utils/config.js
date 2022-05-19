@@ -35,7 +35,7 @@ class Configuration {
         return;
       }
       try {
-        let buffer = await fileSystem.BJSONSerialize(this.config);
+        let buffer = await JSON.stringify(this.config);
         await fileSystem.writeFile(this.path, buffer);
       } catch (error) {
         console.warn('Failed saving settings with error: ', error);
@@ -48,7 +48,7 @@ class Configuration {
   async load() {
     try {
       let buffer = await fileSystem.readFile(this.path);
-      let config = await fileSystem.BJSONDeserialize(buffer);
+      let config = await JSON.parse(buffer);
       this.config = config;
     } catch (error) {
       console.log(error.message);

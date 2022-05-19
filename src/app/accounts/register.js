@@ -1,22 +1,51 @@
-const path = require('path');
-const constants = require('../utils/constants');
 const cipherEngine = require('../crypto/cipherEngine');
+const fileSystem = require('../utils/fileSystem');
+const constants = require('../utils/constants');
 const database = require('../utils/database');
+const path = require('path');
+
+const _getUsers = async () => {
+  let userPath = path.join(constants.paths.root, "users.json");
+  if (await fileSystem.exists(userPath)) {
+    let users = await fileSystem.readFile(userPath);
+    return JSON.parse(users);
+  }
+  else {
+    await fileSystem.writeFile(userPath, JSON.stringify({}));
+    return {};
+  }
+};
+
+const userExists = async (username) => {
+  let users = await _getUsers();
+  for (user in users) {
+    if (Buffer.from(users[user].username.data).equals(Buffer.from(username))) {
+      return true;
+    }
+  }
+  return false;
+}
 
 const registerUser = async (data) => {
-  // const cipherEngine = new CipherEngine(data.password, "", "argon2");
-  // let accountID = cipherEngine.randomUUID();
-  // let accountPath = path.join(constants.paths.root, "accounts");
-  // let databasePath = path.join(accountPath, accountID + ".kpm");
-  // database.createDataBase(accountsFile, data);
+  let usersID = cipherEngine.randomUUID();
+
+  let hashPassword;
+  if (data.kdf === "argon2") {
+    hashPassword = await cipherEngine.argon.argon2dKDF(data.password);
+  } else if (data.kdf === "pbkdf2") {
+    hashPassword = await cipherEngine.pbkdf2.PBKDF2(data.password);
+  }
+  else if (data.kdf === "scrypt") {
+    hashPassword = await cipherEngine.scrypt.scrypt(data.password);
+  }
+
+  console.log(hashPassword);
+  let users = await _getUsers();
+  users[usersID] = { username: Buffer.from(data.username) }
+  await fileSystem.writeFile(path.join(constants.paths.root, "users.json"), JSON.stringify(users));
 }
 
 module.exports = register = {
-  registerUser
+  registerUser,
+  userExists
 };
-
-// [IPC] is registering the user
-// [IPC] with the password
-// [IPC] with the algorithm aes
-// [IPC] with the key length 128
-// [IPC] with the operation mode cbc

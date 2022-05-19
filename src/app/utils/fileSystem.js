@@ -1,6 +1,6 @@
 const fs = require("fs");
 const crypto = require("crypto")
-const { serialize, deserialize } = require("bson");
+// const { serialize, deserialize } = require("bson");
 
 /**
  * Create a folder
@@ -139,23 +139,23 @@ const deleteFolder = (path) => {
   });
 }
 
-/**
- * Serealize data to BSON
- * @param {Object} object object to serialize
- * @returns {Buffer} serialized object
- */
-const BJSONSerialize = (object) => {
-  return serialize(object);
-}
+// /**
+//  * Serealize data to BSON
+//  * @param {Object} object object to serialize
+//  * @returns {Buffer} serialized object
+//  */
+// const BJSONSerialize = (object) => {
+//   return serialize(object);
+// }
 
-/**
- * Deserealize data from BSON
- * @param {*} buffer buffer to deserialize
- * @returns {Object} deserialized object
- */
-const BJSONDeserialize = (buffer) => {
-  return deserialize(buffer);
-}
+// /**
+//  * Deserealize data from BSON
+//  * @param {*} buffer buffer to deserialize
+//  * @returns {Object} deserialized object
+//  */
+// const BJSONDeserialize = (buffer) => {
+//   return deserialize(buffer);
+// }
 
 /**
  * load json file return object 
@@ -185,7 +185,7 @@ module.exports = fileSystem = {
   writeFile,
   infoFile,
   deleteFolder,
-  BJSONSerialize,
-  BJSONDeserialize,
+  // BJSONSerialize,
+  // BJSONDeserialize,
   loadJsonFile,
 };

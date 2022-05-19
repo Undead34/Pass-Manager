@@ -1,7 +1,6 @@
 const { Buffer } = require("buffer")
 const { net } = require('electron')
 const crypto = require("crypto")
-const util = require("util")
 
 // Get data of API
 const APIGet = async (uri) => {

@@ -32,7 +32,8 @@ registerForm.addEventListener("submit", async (event) => {
     password: document.getElementById("password").value,
     algorithm: algorithmsElement.value,
     keyLength: keyLengthElement.value,
-    operationMode: operationModeElement.value
+    operationMode: operationModeElement.value,
+    kdf: "scrypt",
   }
 
   window.api.invoke_2("account-register", registrationPackage);

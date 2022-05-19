@@ -1,15 +1,25 @@
+const random = require("../tools/random")
+const crypto = require("crypto")
+const util = require("util")
+
 /**
  * PBKDF2 key derivation function algorithms simetric
  * @returns {Buffer} Buffer
  */
- const _pbkdf2Symmetric = async () => {
-  try {
-      const salt = await random.autoRandomBytes(16);
-      if (salt.source === "anu-quantum-random") console.log("source: secure anu-quantum-random");
-      let key = crypto.pbkdf2Sync(passphrase, salt.bytes, 100000, algorithm.keySize / 8, "sha512");
-      return { key: key, salt: salt.bytes, kdf: "pbkdf2" };
-  } catch (error) {
-      console.log(error.message);
-      return undefined;
-  }
+const PBKDF2 = async (password, options) => {
+    let salt = await random.autoRandomBytes(16);
+    let pbkdf2 = util.promisify(crypto.pbkdf2)
+    let hash = await pbkdf2(password, salt.bytes, 100000, 32, "sha512");
+    return { hash: hash, salt: salt.bytes, kdf: "pbkdf2" };
+}
+
+const verifyingPBKDF2 = (password, encodedHash, salt) => {
+    let pbkdf2 = util.promisify(crypto.pbkdf2)
+    let hash = pbkdf2(password, salt, 100000, 32, "sha512");
+    return hash === encodedHash;
+}
+
+module.exports = pbkdf2 = {
+    PBKDF2,
+    verifyingPBKDF2
 }

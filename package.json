@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "electron .",
-    "start-dev": "electron . --development"
+    "start-dev": "electron . --development",
+    "build": "electron-builder"
   },
   "keywords": [
     "Password",
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "electron": "^18.1.0",
+    "electron-build": "^0.0.3",
     "electron-reload": "^2.0.0-alpha.1"
   }
 }

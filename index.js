@@ -1,6 +1,3 @@
-// @ts-check
-
-// @ts-ignore
 const { app, BrowserWindow, ipcMain } = require("electron");
 const fileSystem = require("./src/app/utils/fileSystem");
 const onStartup = require("./src/app/utils/onStartup");
@@ -8,7 +5,6 @@ const path = require("path");
 
 if (process.argv.includes("--development")) {
 	console.log("DEVELOPMENT MODE ACTIVE");
-	// @ts-ignore
 	require('electron-reload')(__dirname);
 }
 
@@ -27,9 +23,11 @@ let browserWindowConfig = {
 	},
 }
 
+let mainWindow;
+
 // IPC main events listener
 const listenEvents = async () => {
-	const eventFiles = (await fileSystem.listFiles('./src/IPC-Events')).filter(file => file.endsWith('.js'));
+	const eventFiles = (await fileSystem.listFiles(path.join(__dirname, 'src/IPC-Events'))).filter(file => file.endsWith('.js'));
 
 	for (const file of eventFiles) {
 		const event = require(`./src/IPC-Events/${file}`);
@@ -47,11 +45,16 @@ const listenEvents = async () => {
 }
 
 const createWindow = async () => {
-	const mainWindow = new BrowserWindow(browserWindowConfig);
+	mainWindow = new BrowserWindow(browserWindowConfig);
 	mainWindow.loadFile("./src/views/index.html");
 	if (await listenEvents()) console.log("Events loaded successfully");
 	onStartup();
 }
+
+app.addListener("second-instance", (event) => {
+	if (mainWindow) { mainWindow.show(); }
+	else { app.relaunch() }
+})
 
 if (app.requestSingleInstanceLock() === false) {
 	console.log("Another instance is already running.");
