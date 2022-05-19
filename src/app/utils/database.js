@@ -1,12 +1,13 @@
 const constants = require("./constants")
 const sqlite3 = require("sqlite3")
+const path = require("path")
 
 const getHeader = () => {
   return { database_vesion: constants.databaseConstants.databaseVersion, version: constants.appConstants.appVersion }
 }
 
-const createDataBase = async (databasePath, data) => {
-  const database = new sqlite3.Database(databasePath);
+const createDataBase = async (data) => {
+  const database = new sqlite3.Database(path.join(constants.paths.root, `accounts/${data.id}.kpm`));
   database.serialize(() => {
     database.run("CREATE TABLE IF NOT EXISTS HEADER (ID TEXT, VERSION TEXT, DATABASE_VERSION TEXT)");
     const statement = database.prepare("INSERT INTO HEADER VALUES (?,?,?)");
@@ -19,7 +20,7 @@ const createDataBase = async (databasePath, data) => {
     let inquiry = `CREATE TABLE IF NOT EXISTS LOGIN_DATA (
       MASTER_KEY_HASH TEXT,
       MASTER_KEY_SALT TEXT,
-      MASTER_KEY_KEY_DERIVATION_FUNCTION TEXT,
+      MASTER_KEY_KEY_DERIVATION_FUNCTION TEXT
     )`;
     database.run(inquiry);
 

@@ -27,7 +27,7 @@ const userExists = async (username) => {
 }
 
 const registerUser = async (data) => {
-  let usersID = cipherEngine.randomUUID();
+  data.id = cipherEngine.randomUUID();
 
   let hashPassword;
   if (data.kdf === "argon2") {
@@ -39,9 +39,10 @@ const registerUser = async (data) => {
     hashPassword = await cipherEngine.scrypt.scrypt(data.password);
   }
 
-  console.log(hashPassword);
+  database.createDataBase(data)
+
   let users = await _getUsers();
-  users[usersID] = { username: Buffer.from(data.username) }
+  users[data.id] = { username: Buffer.from(data.username) }
   await fileSystem.writeFile(path.join(constants.paths.root, "users.json"), JSON.stringify(users));
 }
 
