@@ -1,33 +1,42 @@
 const { Buffer } = require("buffer")
 const { net } = require('electron')
 const crypto = require("crypto")
+const util = require("util")
 
 // Get data of API
-const fetch = (url) => {
+const APIGet = async (uri) => {
   return new Promise((resolve, reject) => {
-    let request = net.request(url);
+    const request = net.request(uri);
+
     request.on('response', (response) => {
       let data = "";
-      response.on('data', (chunk) => {
-        data += chunk;
-      });
-      response.on('end', () => {
-        resolve(data);
-      });
+      response.on('data', (chunk) => data += chunk);
+      response.on('end', () => { resolve(data); return; });
     });
 
-    request.on('error', (err) => {
-      reject(err);
-    });
-
+    request.on('error', (err) => { reject(err); return; });
     request.end();
 
     let timeout = setTimeout(() => {
       request.abort()
       resolve("timeout");
       clearTimeout(timeout);
-    }, 3000);
+    }, 1800);
   })
+}
+
+const _difusionBytes = (bytes) => {
+  if (Buffer.isBuffer(bytes)) {
+    let arrayA = [];
+    for (let x = 0; x < bytes.length; x++) {
+      arrayA.push(bytes[x]);
+    }
+    let arrayB = arrayA.sort(function (a, b) { return (Math.random() - 0.5) });
+    let buf = Buffer.from(arrayB);
+    return buf;
+  } else {
+    return false;
+  }
 }
 
 /**
@@ -42,37 +51,39 @@ const fetch = (url) => {
  * 
  * * Block size, only needed for ‘hex16’ data type. Sets the length of each block. Must be between 1–1024.
  
-* @param {number} len 
+ * @param {number} len 
  * @param {string} DataType 
  * @returns {Buffer} random bytes
- */
+*/
 
 const anuQuantumRandomBytes = async (len, DataType = "hex16") => {
-  if (typeof len === "number" && typeof DataType === "string") {
+  let datatypes = ["uint8", "uint16", "hex16"]
+  if (len !== undefined && len !== null && typeof len === "number" && typeof DataType === "string" && datatypes.includes(DataType)) {
     try {
-      let url = `https://qrng.anu.edu.au/API/jsonI.php?length=1&type=${DataType}&size=${len}`;
-      let response = await fetch(url);
+      const API = `https://qrng.anu.edu.au/API/jsonI.php?length=1&type=${DataType}&size=${len}`;
+      let response = await APIGet(API);
 
-      if (response !== null && response !== "timeout") {
+      if (response !== null && response !== "timeout" && response !== undefined && response !== "undefined") {
         let numbers = await JSON.parse(response.toString()).data[0]
-        let numbersBuffer = Buffer.from(numbers, "hex");
-        return numbersBuffer;
+        let coding = null;
+        if (DataType === "hex16") { coding = "hex" }
+        let numbersBuffer = Buffer.from(numbers, coding);
+        return _difusionBytes(numbersBuffer);
       } else return null;
     } catch (err) {
       console.log(err.message);
       return null;
     }
-  }
+  } else { return null; }
 }
 
 /**
  * This function is a fusion of crypto.randomBytes() and anuQuantumRandomBytes() where, depending on whether the user has an internet connection or not, pseudo-random numbers or quantum numbers are used.
  * 
  * @param {number} len the len parameter is the length of bytes to return.
-
  * @return `Object` — pseudo-random or quantum-random bytes.
  */
-const autoRandomBytes = (len) => {
+const autoRandomBytes = async (len) => {
   return new Promise(async (resolve, reject) => {
     let anuQuantumRandomBytesBuf = await anuQuantumRandomBytes(len);
     if (anuQuantumRandomBytesBuf !== null) {
@@ -87,8 +98,7 @@ const autoRandomBytes = (len) => {
   })
 }
 
-
 module.exports = random = {
   anuQuantumRandomBytes,
-  autoRandomBytes,
+  autoRandomBytes
 }

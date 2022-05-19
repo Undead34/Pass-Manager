@@ -1,6 +1,6 @@
 const path = require('path');
 const constants = require('../utils/constants');
-const CipherEngine = require('../crypto/CipherEngine');
+const cipherEngine = require('../crypto/cipherEngine');
 const database = require('../utils/database');
 
 const registerUser = async (data) => {
@@ -8,11 +8,6 @@ const registerUser = async (data) => {
   // let accountID = cipherEngine.randomUUID();
   // let accountPath = path.join(constants.paths.root, "accounts");
   // let databasePath = path.join(accountPath, accountID + ".kpm");
-
-
-
-
-
   // database.createDataBase(accountsFile, data);
 }
 
