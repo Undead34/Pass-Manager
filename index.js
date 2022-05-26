@@ -1,13 +1,34 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
-const fileSystem = require("./src/app/utils/fileSystem");
-const onStartup = require("./src/app/utils/onStartup");
+const { app, BrowserWindow, ipcMain, dialog } = require("electron"); // Electron Modules
+const fileSystem = require("./src/app/utils/fileSystem"); // The easiest file system to use
+const onStartup = require("./src/app/utils/onStartup"); // 
+const logger = require("./src/app/utils/logger");
 const path = require("path");
 
+
+// Developer mode for more info in console
 if (process.argv.includes("--development")) {
 	console.log("DEVELOPMENT MODE ACTIVE");
 	require('electron-reload')(__dirname);
 }
 
+// Capture all errors and write them to the log file
+process.addListener("uncaughtException", (err) => {
+	logger.warn(err);
+	dialog.showErrorBox("Error", err);
+	process.exit(1);
+});
+
+// Capture all rejections and write them to the log file
+process.addListener("unhandledRejection", (reason, p) => {
+	logger.error(reason);
+	if (app.isReady()) dialog.showMessageBoxSync("Error", `Unhandled Rejection at: ${p}`);
+	else {
+		dialog.showErrorBox("Error", reason);
+		process.exit(1);
+	}
+});
+
+// Browser window config
 let browserWindowConfig = {
 	width: 800,
 	height: 600,
@@ -23,9 +44,10 @@ let browserWindowConfig = {
 	},
 }
 
+// Main window
 let mainWindow;
 
-// IPC main events listener
+// IPC main events listeners
 const listenEvents = async () => {
 	const eventFiles = (await fileSystem.listFiles(path.join(__dirname, 'src/IPC-Events'))).filter(file => file.endsWith('.js'));
 
@@ -44,6 +66,7 @@ const listenEvents = async () => {
 	return true;
 }
 
+// Create main window and load the index.html
 const createWindow = async () => {
 	mainWindow = new BrowserWindow(browserWindowConfig);
 	mainWindow.loadFile("./src/views/index.html");
@@ -51,11 +74,13 @@ const createWindow = async () => {
 	onStartup();
 }
 
-app.addListener("second-instance", (event) => {
+// If open other instance of the app, show the first instance or reload if error
+app.addListener("second-instance", () => {
 	if (mainWindow) { mainWindow.show(); }
 	else { app.relaunch() }
 })
 
+// When the app is ready, create the main window and close second instance
 if (app.requestSingleInstanceLock() === false) {
 	console.log("Another instance is already running.");
 	app.quit();

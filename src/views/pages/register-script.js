@@ -27,7 +27,7 @@ drawEncryptionOptions();
 registerForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  let registrationPackage = {
+  let registrePackage = {
     username: document.getElementById("username").value,
     password: document.getElementById("password").value,
     algorithm: algorithmsElement.value,
@@ -36,7 +36,7 @@ registerForm.addEventListener("submit", async (event) => {
     kdf: "scrypt",
   }
 
-  await window.api.invoke_2("account-register", registrationPackage);
+  await window.api.invoke_2("account-register", registrePackage);
 
-  registrationPackage = null;
+  registrePackage = null;
 })

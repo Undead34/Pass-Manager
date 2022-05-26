@@ -1,9 +1,22 @@
 const constants = require("./constants")
 const sqlite3 = require("sqlite3")
 const path = require("path")
+const util = require("util")
+
+const sanitize = (value) => {
+  let invalid = ["(", ")", ";", ":", " ", ",", "=", "\"", "'", "\\", "/", "*", "?", "|", "&", "^", "<", ">", "~", "`"];
+
+  for (let x = 0; x < invalid.length; x++) {
+    value = value.replace(invalid[x], "");
+  }
+  return value;
+}
 
 // return SQLITE3 query
 const createTable = (tableName, columns) => {
+  tableName = sanitize(tableName);
+  columns = sanitize(columns);
+
   let query = `CREATE TABLE IF NOT EXISTS ${tableName} (`;
   for (let column in columns) {
     query += `${column} ${columns[column]},`;
@@ -24,7 +37,7 @@ const createDataBase = async (data) => {
       "MASTER_KEY_SALT": "BLOB",
       "MASTER_KEY_KEY_DERIVATION_FUNCTION": "TEXT",
       "MASTER_KEY_KEY_DERIVATION_PARAMETERS": "TEXT",
-      "USERNAME": "TEXT",
+      "USERNAME": "BLOB",
     }));
 
     database.run(createTable("CREDENTIALS", {
@@ -60,6 +73,20 @@ const createDataBase = async (data) => {
 
   return true;
 }
+
+const databaseGet = async (data, table) => {
+  table = sanitize(table);
+  console.log(table)
+  let database = new sqlite3.Database(path.join(constants.paths.root, `accounts/${data.id}.kpm`));
+
+  database.serialize( async () => {
+    const get = util.promisify(database.get).bind(database);
+    let rows = await get(`SELECT * FROM ${table}`)
+    console.log(rows)
+  });
+  database.close();
+}
+
 
 const compressDataBase = () => { }
 const uncompressDataBase = () => { }
@@ -131,4 +158,5 @@ var Folder = {
 
 module.exports = DataBase = {
   createDataBase,
+  databaseGet
 };

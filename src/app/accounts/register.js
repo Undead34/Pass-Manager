@@ -37,9 +37,11 @@ const registerUser = async (data) => {
     else if (data.kdf === "scrypt") {
       data.masterhash = await cipherEngine.scrypt.scrypt(data.password);
     }
+    data.username = await Buffer.from(data.username, "utf-8");
+
     database.createDataBase(data);
     let users = await _getUsers();
-    users[data.id] = { username: Buffer.from(data.username) }
+    users[data.id] = { username: data.username }
     await fileSystem.writeFile(path.join(constants.paths.root, "users.json"), JSON.stringify(users));
     return true;
   } catch (error) {
