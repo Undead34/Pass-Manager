@@ -19,9 +19,12 @@ process.addListener("uncaughtException", (err) => {
 });
 
 // Capture all rejections and write them to the log file
-process.addListener("unhandledRejection", (reason, p) => {
+process.addListener("unhandledRejection", (reason) => {
 	logger.error(reason);
-	if (app.isReady()) dialog.showMessageBoxSync("Error", `Unhandled Rejection at: ${p}`);
+	console.log(reason)
+	if (app.isReady()) {
+		dialog.showErrorBox("Error", reason.toString());
+	}
 	else {
 		dialog.showErrorBox("Error", reason);
 		process.exit(1);

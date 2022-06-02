@@ -39,7 +39,8 @@ const registerUser = async (data) => {
     }
     data.username = await Buffer.from(data.username, "utf-8");
 
-    database.createDataBase(data);
+
+    // database.createDataBase(data);
     let users = await _getUsers();
     users[data.id] = { username: data.username }
     await fileSystem.writeFile(path.join(constants.paths.root, "users.json"), JSON.stringify(users));

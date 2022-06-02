@@ -1,7 +1,7 @@
 const cipherEngine = require('../crypto/cipherEngine');
 const fileSystem = require('../utils/fileSystem');
 const constants = require('../utils/constants');
-const database = require('../utils/database');
+// const database = require('../utils/database');
 const path = require('path');
 
 const _getUsers = async () => {
@@ -36,12 +36,12 @@ const _getID = async (username) => {
   }
 }
 
-const newLogin = async (data) => {
+const createLogin = async (data) => {
   data.id = await _getID(data.username);
   
 }
 
 module.exports = login = {
-  newLogin,
+  createLogin,
   userExists
 };

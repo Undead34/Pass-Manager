@@ -7,7 +7,7 @@ module.exports = {
 	execute(event, data) {
 		login.userExists(data.username).then((exists) => {
 			if (exists) {
-				login.newLogin(data);
+				login.createLogin(data);
 			} else {
 				event.sender.send('account-login-response', { success: false, error: 'Username not exists', error_code: "UNE" });
 			}
