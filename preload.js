@@ -39,7 +39,7 @@ contextBridge.exposeInMainWorld(
     ipcRenderer.send(channel, data);
   },
 
-  invoke_2: (channel, data) => {
-    return ipcRenderer.invoke(channel, data);
+  invoke_2: (channel, ...args) => {
+    return ipcRenderer.invoke(channel, args);
   },
 })

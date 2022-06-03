@@ -1,27 +1,62 @@
 const path = require("path")
 
 const appConstants = {
-  appName: 'Pass Manager',
-  appNameMachine: 'pass-manager',
+  appName: 'Kryptopass',
+  appNameMachine: 'kryptopass',
   appVersion: '1.0.0',
   appDescription: 'Open source Password Manager',
   appAuthor: 'Undead34',
 }
 
 const databaseConstants = {
-  databaseName: 'pass-manager',
+  databaseName: 'kryptopass',
   databaseVersion: '1.0.0',
-  databaseExtension: 'db',
-  databaseCompressionExtension: 'db.gz',
+  databaseExtension: 'kpdb',
+  databaseCompressionExtension: 'kpdb.gz',
   databaseCompressionAlgorithm: 'gzip',
+  databaseHeader: {
+    "APP_VERSION": "TEXT",
+    "DATA_BASE_VERSION": "TEXT",
+    "USER_ID": "TEXT",
+    "USER_NAME": "TEXT",
+    "USER_KEY_HASH": "BLOB",
+    "USER_KEY_SALT": "BLOB",
+    "USER_KEY_IV": "BLOB",
+    "KEY_LENGTH": "INTEGER",
+    "KEY_DERIVATION_FUNCTION": "TEXT",
+    "KEY_DERIVATION_PARAMETERS": "TEXT",
+    "ALGORITHM": "TEXT",
+    "ALGORITHM_PARAMETERS": "TEXT",
+  },
+  databaseCredentials: {
+    "ID": "TEXT",
+    "USERNAME_ELEMENT": "TEXT",
+    "USERNAME_VALUE": "BLOB",
+    "PASSWORD_ELEMENT": "TEXT",
+    "PASSWORD_VALUE": "BLOB",
+    "DATE_CREATED": "TEXT",
+    "DATE_MODIFIED": "TEXT",
+    "DATE_LAST_USED": "TEXT",
+    "ORIGIN_URL": "BLOB",
+    "ACTION_URL": "BLOB",
+    "SUBMIT_ELEMENT": "TEXT",
+    "ICON_URL": "BLOB",
+    "TIMES_USED": "TEXT",
+  }
 }
 
 const cipherConstants = {
-  cipherName: 'AES-256-CBC',
+  cipherName: 'aes-256-cbc',
   cipherKeyLength: 32,
   cipherSaltLength: 16,
-  cipherIterations: 10000,
-  cipherHashAlgorithm: 'sha512',
+  KDF: {
+    "ARGON2": {
+      hashLength: 32,
+      timeCost: 3,
+      memoryCost: 4096,
+      
+    }
+  }
 }
 
 const userConstants = {
@@ -30,8 +65,8 @@ const userConstants = {
 }
 
 const paths = {
-  root: path.join(process.platform === 'win32' ? 'C:/' : '/', process.platform === 'win32' ? '/ProgramData/Pass-Manager' : process.platform === 'darwin' ? '/Applications/Pass-Manager.app' : 'opt/Pass-Manager'),
-  database: path.join(path.join(process.platform === 'win32' ? 'C:/' : '/', process.platform === 'win32' ? '/ProgramData/Pass-Manager' : process.platform === 'darwin' ? '/Applications/Pass-Manager.app' : 'opt/Pass-Manager'), "accounts"),
+  root: path.join(process.platform === 'win32' ? 'C:/' : '/', process.platform === 'win32' ? `/ProgramData/${appConstants.appName}` : process.platform === 'darwin' ? `/Applications/${appConstants.appName}.app` : `/usr/share/${appConstants.appName}`),
+  database: path.join(path.join(process.platform === 'win32' ? 'C:/' : '/', process.platform === 'win32' ? `/ProgramData/${appConstants.appName}` : process.platform === 'darwin' ? `/Applications/${appConstants.appName}.app` : `/usr/share/${appConstants.appName}`), "accounts"),
 }
 
 const constants = {

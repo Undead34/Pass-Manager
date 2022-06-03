@@ -1,6 +1,7 @@
 const constants = require("../../utils/constants")
 const random = require("../tools/random")
 const { argon2d, argon2i } = require("argon2-ffi");
+const argon = require("argon2");
 
 const argon2dKDF = async (password, options = null) => {
   let salt = await random.autoRandomBytes(16);
@@ -22,9 +23,21 @@ const verifyingPassword2i = async (password, encodedHash) => {
   return isCorrect;
 }
 
+const argon2idKDF = async (password, options = null) => {
+  options.type = argon.argon2id;
+  return await argon.hash(Buffer.from(password), options);
+}
+
+const verifyingPassword2id = async (password, encodedHash) => {
+  const isCorrect = await argon.verify(encodedHash, Buffer.from(password));
+  return isCorrect;
+}
+
 module.exports = argon2 = {
   verifyingPassword2d,
   verifyingPassword2i,
+  verifyingPassword2id,
   argon2dKDF,
-  argon2iKDF
+  argon2iKDF,
+  argon2idKDF,
 }

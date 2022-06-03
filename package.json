@@ -16,6 +16,7 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "@electron/remote": "^2.0.8",
+    "argon2": "^0.28.5",
     "argon2-ffi": "^2.0.0",
     "bson": "^4.6.2",
     "sqlite3": "^5.0.8"

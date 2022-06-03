@@ -30,13 +30,11 @@ registerForm.addEventListener("submit", async (event) => {
   let registrePackage = {
     username: document.getElementById("username").value,
     password: document.getElementById("password").value,
-    algorithm: algorithmsElement.value,
-    keyLength: keyLengthElement.value,
-    operationMode: operationModeElement.value,
-    kdf: "scrypt",
   }
 
-  await window.api.invoke_2("account-register", registrePackage);
+  let options = "default"
+
+  await window.api.invoke_2("account-register", registrePackage, options);
 
   registrePackage = null;
 })

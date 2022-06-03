@@ -58,12 +58,11 @@ class databaseController {
     let query = `CREATE TABLE IF NOT EXISTS ${tableName} (`;
 
     for (let column in columns) {
-      column = sanitize(column);
-      query += `${column} ${this._sanitize(columns[column])},`;
-      query = query.slice(0, -1);
-      query += ")";
+      column = this._sanitize(column);
+      query += `${column} ${this._sanitize(columns[column])} ,`;
     }
-
+    query = query.slice(0, -1);
+    query += ")";
     return query;
   }
 }
