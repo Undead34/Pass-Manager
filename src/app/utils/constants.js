@@ -36,12 +36,15 @@ const databaseConstants = {
     "PASSWORD_VALUE": "BLOB",
     "DATE_CREATED": "TEXT",
     "DATE_MODIFIED": "TEXT",
+    "DATE_MODIFIED": "TEXT",
+    "DATE_EXPIRED": "TEXT",
+    "DATE_DELETED": "TEXT",
     "DATE_LAST_USED": "TEXT",
     "ORIGIN_URL": "BLOB",
     "ACTION_URL": "BLOB",
     "SUBMIT_ELEMENT": "TEXT",
     "ICON_URL": "BLOB",
-    "TIMES_USED": "TEXT",
+    "TIMES_USED": "INTEGER"
   }
 }
 

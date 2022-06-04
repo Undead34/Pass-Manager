@@ -50,17 +50,36 @@ const registerUser = async (data, options) => {
       let dbPath = path.join(constants.paths.database, `/${id}.kpdb`);
       const db = new database(dbPath);
 
-      let credentials = await db.createTable("CREDENTIALS", constants.databaseConstants.databaseCredentials);
-      await db.run(credentials);
       let header = await db.createTable("HEADER", constants.databaseConstants.databaseHeader);
       await db.run(header);
+      let credentials = await db.createTable("CREDENTIALS", constants.databaseConstants.databaseCredentials);
+      await db.run(credentials);
 
       let newData = await prepareData(data, options);
       newData.USER_ID = id;
       newData.USER_NAME = data.username;
-      console.log(newData);
-      let query = await db.insert("HEADER", newData);
-      await db.run(query.query, query.params);
+      let dataQuery = await db.insert("HEADER", newData);
+      await db.run(dataQuery.query, dataQuery.params);
+
+      let newCredentials = {};
+      newCredentials.ID = cipherEngine.randomUUID();
+      newCredentials.USERNAME_ELEMENT = "input";
+      newCredentials.USERNAME_VALUE = await Buffer.from(data.username);
+      newCredentials.PASSWORD_ELEMENT = "text";
+      newCredentials.PASSWORD_VALUE = await Buffer.from(data.password);
+      newCredentials.DATE_CREATED = new Date().toISOString();
+      newCredentials.DATE_MODIFIED = new Date().toISOString();
+      newCredentials.DATE_EXPIRED = new Date().toISOString();
+      newCredentials.DATE_DELETED = null;
+      newCredentials.DATE_LAST_USED = null;
+      newCredentials.ORIGIN_URL = await Buffer.from("www.example.com");
+      newCredentials.ACTION_URL = await Buffer.from("www.example.com/login");
+      newCredentials.SUBMIT_ELEMENT = "button";
+      newCredentials.ICON_URL = null;
+      newCredentials.TIMES_USED = 0;
+
+      let credentialsQuery = await db.insert("CREDENTIALS", newCredentials);
+      await db.run(credentialsQuery.query, credentialsQuery.params);
 
       let usersPath = path.join(constants.paths.root, "users.json");
       let users = await fileSystem.readFile(usersPath);
