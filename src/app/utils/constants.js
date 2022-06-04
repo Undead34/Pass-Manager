@@ -16,12 +16,12 @@ const databaseConstants = {
   databaseCompressionAlgorithm: 'gzip',
   databaseHeader: {
     "APP_VERSION": "TEXT",
-    "DATA_BASE_VERSION": "TEXT",
+    "DATABASE_VERSION": "TEXT",
     "USER_ID": "TEXT",
     "USER_NAME": "TEXT",
-    "USER_KEY_HASH": "BLOB",
-    "USER_KEY_SALT": "BLOB",
-    "USER_KEY_IV": "BLOB",
+    "MASTER_KEY_HASH": "BLOB",
+    "MASTER_KEY_SALT": "BLOB",
+    "MASTER_KEY_IV": "BLOB",
     "KEY_LENGTH": "INTEGER",
     "KEY_DERIVATION_FUNCTION": "TEXT",
     "KEY_DERIVATION_PARAMETERS": "TEXT",
@@ -49,8 +49,8 @@ const cipherConstants = {
   cipherName: 'aes-256-cbc',
   cipherKeyLength: 32,
   cipherSaltLength: 16,
-  KDF: {
-    "ARGON2": {
+  kdf: {
+    argon: {
       hashLength: 32,
       timeCost: 3,
       memoryCost: 4096,

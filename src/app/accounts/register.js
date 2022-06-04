@@ -23,15 +23,25 @@ const validateUserExists = async (username) => {
 
 const prepareData = async (data, options) => {
   if (typeof options === "string" && options === "default") {
-    options = constants.cipherConstants;
-
+    options = constants.cipherConstants.kdf.argon;
     let processedData = {};
+    processedData.APP_VERSION = constants.appConstants.appVersion;
+    processedData.DATABASE_VERSION = constants.databaseConstants.databaseVersion;
+    processedData.MASTER_KEY_HASH = await Buffer.from(await cipherEngine.argon.argon2idKDF(data.password, options));
+    processedData.MASTER_KEY_SALT = null;
+    processedData.MASTER_KEY_IV = null;
+    processedData.KEY_LENGTH = 32 * 8;
+    processedData.KEY_DERIVATION_FUNCTION = "argon2id";
+    processedData.KEY_DERIVATION_PARAMETERS = await JSON.stringify(options);
+    processedData.ALGORITHM = "aes-256-cbc";
+    processedData.ALGORITHM_PARAMETERS = "default";
 
-    processedData.masterKey = cipherEngine.argon(data.masterKey, options.cipherSaltLength, options.cipherIterations, options.cipherHashAlgorithm);
+    return processedData;
   }
 }
 
 const registerUser = async (data, options) => {
+
   if (await validateUserExists(data.username)) {
     return { success: false, message: "User already exists" };
   } else {
@@ -40,12 +50,17 @@ const registerUser = async (data, options) => {
       let dbPath = path.join(constants.paths.database, `/${id}.kpdb`);
       const db = new database(dbPath);
 
-      let header = await db.createTable("HEADER", constants.databaseConstants.databaseHeader);
-      await db.run(header);
       let credentials = await db.createTable("CREDENTIALS", constants.databaseConstants.databaseCredentials);
       await db.run(credentials);
+      let header = await db.createTable("HEADER", constants.databaseConstants.databaseHeader);
+      await db.run(header);
 
-    prepareData(data, options);
+      let newData = await prepareData(data, options);
+      newData.USER_ID = id;
+      newData.USER_NAME = data.username;
+      console.log(newData);
+      let query = await db.insert("HEADER", newData);
+      await db.run(query.query, query.params);
 
       let usersPath = path.join(constants.paths.root, "users.json");
       let users = await fileSystem.readFile(usersPath);

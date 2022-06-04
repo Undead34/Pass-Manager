@@ -9,6 +9,7 @@ class databaseController {
     return new Promise((resolve, reject) => {
       this.db.run(sql, params, function (err) {
         if (err) {
+          console.log(err);
           reject(err)
         } else {
           resolve(this.lastID)
@@ -64,6 +65,32 @@ class databaseController {
     query = query.slice(0, -1);
     query += ")";
     return query;
+  }
+
+  insert(tableName, data) {
+    tableName = this._sanitize(tableName);
+
+    let query = `INSERT INTO ${tableName} (`;
+    let values = "VALUES (";
+    let params = [];
+
+    for (let column in data) {
+      column = this._sanitize(column);
+      query += `${column} ,`;
+      values += `? ,`;
+      params.push(data[column]);
+    }
+
+    query = query.slice(0, -1);
+
+    values = values.slice(0, -1);
+
+    query += ") ";
+    values += ")";
+
+    query += values;
+
+    return { query, params };
   }
 }
 
