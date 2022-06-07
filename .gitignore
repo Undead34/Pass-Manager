@@ -1,4 +1,48 @@
-node_modules
-dist
+# Node files #
+######################
+/node_modules
+npm-debug.log
+/bower_components
+
+# Less files
+data/less
+
+#eslint cache
+.eslintcache
+
+#jest test coverage
+/coverage
+
+# Plugin development #
+######################
+__snapshots__
+*.map
+
+# Plugin build       #
+######################
+/build
+/dist
+/bootstrap.js
+*.pem
+
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+/.settings
+/.idea/*
+gi
+
+# Errors and Warnings #
+#######################
+/Errors
 Errors.log
 Warning.log
+ErrorReport.txt

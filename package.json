@@ -1,8 +1,8 @@
 {
-  "name": "pass-manager",
+  "name": "kryptopass",
   "version": "0.0.1",
   "description": "Open source Password Manager",
-  "main": "index.js",
+  "main": "./src/index.js",
   "scripts": {
     "start": "electron .",
     "start-dev": "electron . --development",
@@ -10,7 +10,10 @@
   },
   "keywords": [
     "Password",
-    "Manager"
+    "Manager",
+    "Kryptopass",
+    "Open Source",
+    "Electron"
   ],
   "author": "Undead34",
   "license": "GPL-3.0-or-later",
