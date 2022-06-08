@@ -1,6 +1,6 @@
 const config = require("./app/config/config.js");
 const LogServiceLocal = require("./app/error/log");
-const {  } = require("electron");
+const { } = require("electron");
 const path = require("path");
 
 // Developer mode for more info in console
